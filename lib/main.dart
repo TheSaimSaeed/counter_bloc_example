@@ -1,4 +1,8 @@
+import 'package:counter_bloc_example/Bloc/Counter/counter_bloc.dart';
+import 'package:counter_bloc_example/Bloc/Counter/counter_event.dart';
+import 'package:counter_bloc_example/Bloc/Counter/counter_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,13 +13,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Counter App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return BlocProvider(
+      create: (context) => CounterBloc(),
+      child: MaterialApp(
+        title: 'Counter App',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const HomeScreen(),
       ),
-      home: const HomeScreen(),
     );
   }
 }
@@ -39,20 +46,30 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              '0',
-              style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
-            ),
+            BlocBuilder<CounterBloc, CounterState>(builder: (context, state) {
+              return Text(
+                state.num.toString(),
+                style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
+              );
+            }),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 //Increment
-                ElevatedButton(onPressed: () {}, child: Text('Increment')),
+                ElevatedButton(
+                    onPressed: () {
+                      context.read<CounterBloc>().add(IncrementCounter());
+                    },
+                    child: Text('Increment')),
                 SizedBox(
                   width: 15,
                 ),
                 //decrement
-                ElevatedButton(onPressed: () {}, child: Text('Decrement'))
+                ElevatedButton(
+                    onPressed: () {
+                      context.read<CounterBloc>().add(DecrementCounter());
+                    },
+                    child: Text('Decrement'))
               ],
             )
           ],
